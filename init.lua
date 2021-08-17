@@ -6,8 +6,8 @@ minetest.after(1, function() -- Delay until all nodes are registered (mod loadin
 		and def.groups.not_in_creative_inventory ~= 1	-- Exclude technical blocks.
 		and def.groups.liquid == nil					-- This probably makes liquids unobtainable, but they update too easily and create massive messes.
 		and not string.match(def.name, "stair")			-- Exclude stairs because it's a bit boring just having stair variants of nodes everywhere.
-		and not string.match(def.name, "slab")			--		- | | -
-		and not string.match(def.name, "fence")			--		- | | -
+		and not string.match(def.name, "slab")			--		Same thing.
+		and not string.match(def.name, "fence")			--		Same thing.
 		and not string.match(def.name, "bed")			-- Tends to create a lot of ugly half-beds
 		and not string.match(def.name, "door")			-- Exclude doors, but also fence gates and whatnot... Hopefully.
 		then
@@ -16,6 +16,27 @@ minetest.after(1, function() -- Delay until all nodes are registered (mod loadin
 	end
 end)
 
+-- Graciously borrowed from NodeCore
+-- https://gitlab.com/sztest/nodecore/-/blob/master/mods/nc_api/util_misc.lua#L106-120
+function seeded_rng(seed)
+	seed = math.floor((seed - math.floor(seed)) * 2 ^ 32 - 2 ^ 31)
+	local pcg = PcgRandom(seed)
+	return function(a, b)
+		if b then
+			return pcg:next(a, b)
+		elseif a then
+			return pcg:next(1, a)
+		end
+		return (pcg:next() + 2 ^ 31) / 2 ^ 32
+	end
+end
+
+local mapperlin
+minetest.after(0, function()
+	mapperlin = minetest.get_perlin(0, 1, 0, 1)
+end)
+
+local rng
 local data = {}
 
 if minetest.get_mapgen_setting('mg_name') == "singlenode" then
@@ -23,6 +44,8 @@ if minetest.get_mapgen_setting('mg_name') == "singlenode" then
 		local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
 		local area = VoxelArea:new{MinEdge = emin, MaxEdge = emax}
 		vm:get_data(data)
+
+		local rng = seeded_rng(mapperlin:get_3d(minp))
 
 		for z = 0, 79 do
 			for y = 0, 79 do
@@ -34,7 +57,7 @@ if minetest.get_mapgen_setting('mg_name') == "singlenode" then
 					}
 
 					if (pos.x % 3 == 0) and (pos.y % 4 == 0) and (pos.z % 3 == 0) then
-						data[area:index(pos.x, pos.y, pos.z)] = minetest.get_content_id(list_of_nodes[math.random(#list_of_nodes)])
+						data[area:index(pos.x, pos.y, pos.z)] = minetest.get_content_id(list_of_nodes[rng(1, #list_of_nodes)])
 					end
 				end
 			end
