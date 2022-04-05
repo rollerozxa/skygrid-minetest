@@ -47,17 +47,11 @@ if minetest.get_mapgen_setting('mg_name') == "singlenode" then
 
 		local rng = seeded_rng(mapperlin:get_3d(minp))
 
-		for z = 0, 79 do
-			for y = 0, 79 do
-				for x = 0, 79 do
-					local pos = {
-						x = minp.x + x,
-						y = minp.y + y,
-						z = minp.z + z
-					}
-
-					if (pos.x % 3 == 0) and (pos.y % 4 == 0) and (pos.z % 3 == 0) then
-						data[area:index(pos.x, pos.y, pos.z)] = minetest.get_content_id(list_of_nodes[rng(1, #list_of_nodes)])
+		for z = minp.z, maxp.z do
+			for y = minp.y, maxp.y do
+				for x = minp.x, maxp.x do
+					if (x % 3 == 0) and (y % 4 == 0) and (z % 3 == 0) then
+						data[area:index(x, y, z)] = minetest.get_content_id(list_of_nodes[rng(1, #list_of_nodes)])
 					end
 				end
 			end
