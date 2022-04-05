@@ -1,5 +1,5 @@
 local list_of_nodes = {}
-minetest.after(1, function() -- Delay until all nodes are registered (mod loading complete)
+minetest.register_on_mods_loaded(function() -- Delay until all nodes are registered (mod loading complete)
 	for name, def in pairs(minetest.registered_nodes) do
 		if def
 		and def.groups									-- Exclude nodes without a group, which usually means indestructible ones
