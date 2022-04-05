@@ -60,6 +60,8 @@ if minetest.get_mapgen_setting('mg_name') == "singlenode" then
 		vm:set_data(data)
 		vm:write_to_map()
 	end)
+else
+	minetest.log("warning", "[skygrid] Skygrid mod enabled, but not singlenode mapgen. Please disable this mod.")
 end
 
 minetest.register_on_newplayer(function(player)
