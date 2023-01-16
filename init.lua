@@ -1,3 +1,7 @@
+local interval_x = minetest.settings:get("skygrid_interval_x") or 3
+local interval_y = minetest.settings:get("skygrid_interval_y") or 4
+local interval_z = minetest.settings:get("skygrid_interval_z") or 3
+
 local list_of_nodes = {}
 minetest.register_on_mods_loaded(function() -- Delay until all nodes are registered (mod loading complete)
 	for name, def in pairs(minetest.registered_nodes) do
@@ -50,7 +54,7 @@ if minetest.get_mapgen_setting('mg_name') == "singlenode" then
 		for z = minp.z, maxp.z do
 			for y = minp.y, maxp.y do
 				for x = minp.x, maxp.x do
-					if (x % 3 == 0) and (y % 4 == 0) and (z % 3 == 0) then
+					if (x % interval_x == 0) and (y % interval_y == 0) and (z % interval_z == 0) then
 						data[area:index(x, y, z)] = minetest.get_content_id(list_of_nodes[rng(1, #list_of_nodes)])
 					end
 				end
