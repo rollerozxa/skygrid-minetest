@@ -1,6 +1,7 @@
 local interval_x = minetest.settings:get("skygrid_interval_x") or 3
 local interval_y = minetest.settings:get("skygrid_interval_y") or 4
 local interval_z = minetest.settings:get("skygrid_interval_z") or 3
+local spawn_chance = tonumber(minetest.settings:get("skygrid_node_chance") or 1.0)
 
 local list_of_nodes = {}
 minetest.register_on_mods_loaded(function() -- Delay until all nodes are registered (mod loading complete)
@@ -51,11 +52,17 @@ if minetest.get_mapgen_setting('mg_name') == "singlenode" then
 
 		local rng = seeded_rng(mapperlin:get_3d(minp))
 
+		math.randomseed(mapperlin:get_3d(minp)) --works more easily for generating random floats
+
 		for z = minp.z, maxp.z do
 			for y = minp.y, maxp.y do
 				for x = minp.x, maxp.x do
 					if (x % interval_x == 0) and (y % interval_y == 0) and (z % interval_z == 0) then
-						data[area:index(x, y, z)] = minetest.get_content_id(list_of_nodes[rng(1, #list_of_nodes)])
+						-- if x = y = z = 0, always spawn a node to prevent player falling
+						local do_spawn = math.random() < spawn_chance or x + y + z == 0
+						if do_spawn then
+							data[area:index(x, y, z)] = minetest.get_content_id(list_of_nodes[rng(1, #list_of_nodes)])
+						end
 					end
 				end
 			end
