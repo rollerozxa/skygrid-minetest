@@ -59,7 +59,7 @@ if minetest.get_mapgen_setting('mg_name') == "singlenode" then
 				for x = minp.x, maxp.x do
 					if (x % interval_x == 0) and (y % interval_y == 0) and (z % interval_z == 0) then
 						-- if x = y = z = 0, always spawn a node to prevent player falling
-						local do_spawn = math.random() < spawn_chance or x + y + z == 0
+						local do_spawn = math.random() <= spawn_chance or x + y + z == 0
 						if do_spawn then
 							data[area:index(x, y, z)] = minetest.get_content_id(list_of_nodes[rng(1, #list_of_nodes)])
 						end
