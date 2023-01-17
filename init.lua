@@ -77,5 +77,5 @@ end
 
 minetest.register_on_newplayer(function(player)
 	player:set_velocity({ x = 0, y = 0, z = 0 })
-	player:set_pos({ x = 0, y = 0, z = 0 })
+	player:set_pos({ x = 0, y = 0.5, z = 0 })
 end)
