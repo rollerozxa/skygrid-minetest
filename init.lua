@@ -1,7 +1,11 @@
+
+if minetest.get_mapgen_setting('mg_name') ~= "singlenode" then
+	error("Skygrid mod enabled, but not singlenode mapgen. Please disable this mod.")
+end
+
 local interval_x = minetest.settings:get("skygrid_interval_x") or 3
 local interval_y = minetest.settings:get("skygrid_interval_y") or 4
 local interval_z = minetest.settings:get("skygrid_interval_z") or 3
-local spawn_chance = tonumber(minetest.settings:get("skygrid_node_chance") or 1.0)
 
 local list_of_nodes = {}
 minetest.register_on_mods_loaded(function() -- Delay until all nodes are registered (mod loading complete)
@@ -41,39 +45,29 @@ minetest.after(0, function()
 	mapperlin = minetest.get_perlin(0, 1, 0, 1)
 end)
 
-local rng
 local data = {}
 
-if minetest.get_mapgen_setting('mg_name') == "singlenode" then
-	minetest.register_on_generated(function(minp, maxp, blockseed)
-		local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
-		local area = VoxelArea:new{MinEdge = emin, MaxEdge = emax}
-		vm:get_data(data)
+minetest.register_on_generated(function(minp, maxp, blockseed)
+	local t0 = os.clock()
+	local vm, emin, emax = minetest.get_mapgen_object("voxelmanip")
+	local area = VoxelArea:new{MinEdge = emin, MaxEdge = emax}
+	vm:get_data(data)
 
-		local rng = seeded_rng(mapperlin:get_3d(minp))
+	local rng = seeded_rng(mapperlin:get_3d(minp))
 
-		math.randomseed(mapperlin:get_3d(minp)) --works more easily for generating random floats
-
-		for z = minp.z, maxp.z do
-			for y = minp.y, maxp.y do
-				for x = minp.x, maxp.x do
-					if (x % interval_x == 0) and (y % interval_y == 0) and (z % interval_z == 0) then
-						-- if x = y = z = 0, always spawn a node to prevent player falling
-						local do_spawn = math.random() <= spawn_chance or x + y + z == 0
-						if do_spawn then
-							data[area:index(x, y, z)] = minetest.get_content_id(list_of_nodes[rng(1, #list_of_nodes)])
-						end
-					end
+	for z = minp.z, maxp.z do
+		for y = minp.y, maxp.y do
+			for x = minp.x, maxp.x do
+				if (x % interval_x == 0) and (y % interval_y == 0) and (z % interval_z == 0) then
+					data[area:index(x, y, z)] = minetest.get_content_id(list_of_nodes[rng(1, #list_of_nodes)])
 				end
 			end
 		end
+	end
 
-		vm:set_data(data)
-		vm:write_to_map()
-	end)
-else
-	minetest.log("warning", "[skygrid] Skygrid mod enabled, but not singlenode mapgen. Please disable this mod.")
-end
+	vm:set_data(data)
+	vm:write_to_map()
+end)
 
 minetest.register_on_newplayer(function(player)
 	player:set_velocity({ x = 0, y = 0, z = 0 })

@@ -1,9 +1,8 @@
-# Place a random Block every n-th Block on the X axis (Left/Right)
-skygrid_interval_x (Distance between Blocks: X axis) int 3 1 255
-# Place a random Block every n-th Block on the Y axis (Up/Down)
-skygrid_interval_y (Distance between Blocks: Y axis) int 4 3 255
-# Place a random Block every n-th Block on the Z axis (Front/Back)
-skygrid_interval_z (Distance between Blocks: Z axis) int 3 1 255
+# Distance between nodes on the X axis
+skygrid_interval_x (Distance X axis) int 3 1 255
 
-# Chance of Blocks spawning (0.01 -> 1 %, 1.0 -> 100 %)
-skygrid_node_chance (Node Spawn Chance) float 1.0 0.0001 1.0
+# Distance between nodes on the Y axis
+skygrid_interval_y (Distance Y axis) int 4 3 255
+
+# Distance between nodes on the Z axis
+skygrid_interval_z (Distance Z axis) int 3 1 255
